@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supa_man/screen/List.dart';
-import '../repository/supa.dart';
+import '../repository/catRepo.dart';
+
 import 'Form.dart';
 
 class MyApp extends StatefulWidget {
@@ -20,8 +21,7 @@ class _MyAppState extends State<MyApp> {
             return Scaffold(
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Forms()));
+                    _reload(context);
                   },
                   child: Icon(Icons.add),
                 ),
@@ -40,5 +40,11 @@ class _MyAppState extends State<MyApp> {
             );
           }
         });
+  }
+
+  Future _reload(BuildContext context) async {
+    await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => Forms()));
+    setState(() {});
   }
 }

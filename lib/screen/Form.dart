@@ -1,11 +1,27 @@
+import 'dart:io';
+import 'dart:core';
 import 'package:flutter/material.dart';
-import 'package:supa_man/repository/supa.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../repository/catRepo.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
 
-class Forms extends StatelessWidget {
+class Forms extends StatefulWidget {
   Forms({super.key});
+
+  @override
+  State<Forms> createState() => _FormsState();
+}
+
+class _FormsState extends State<Forms> {
+  File? _image;
   final _formkey = GlobalKey<FormState>();
+  final supabase = Supabase.instance.client;
+
   final TextEditingController _catname = TextEditingController();
+
   final TextEditingController _catbreed = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,19 +72,57 @@ class Forms extends StatelessWidget {
                               style: TextStyle(fontSize: 20),
                             )),
                       ),
+                      OutlinedButton(
+                        onPressed: () {
+                          getImage();
+                        },
+                        child: Text("Select Image"),
+                      ),
                       ElevatedButton(
                           onPressed: () {
-                            if (_formkey.currentState!.validate()) {
-                              Supa().insertData(
-                                  name: _catname.text, breed: _catbreed.text);
-                            }
-                            Navigator.pop(context);
+                            setState(() {
+                              uploadAndSave();
+                            });
                           },
-                          child: Text('Click'))
+                          child: Text('Confirm'))
                     ],
                   )),
             )
           ],
         ));
+  }
+
+  void getImage() async {
+    final xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (xFile == null) {
+      return;
+    }
+    setState(() {
+      _image = File(xFile.path);
+    });
+  }
+
+  Future<void> uploadAndSave() async {
+    if (_image == null) return;
+    final filename =
+        '${DateTime.now().millisecondsSinceEpoch}${path.extension(_image!.path)}';
+
+    final upload = await supabase.storage.from('imgs').upload(
+          filename,
+          _image!,
+        );
+
+    final _imageUrl =
+        await supabase.storage.from('imgs').getPublicUrl(filename);
+
+    await uploadFormDetail(_imageUrl);
+  }
+
+  Future uploadFormDetail(String imageUrl) async {
+    final upload = await Supa().insertData(
+        name: _catbreed.text, breed: _catbreed.text, image: imageUrl);
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("All data uploaded sucessfully")));
   }
 }

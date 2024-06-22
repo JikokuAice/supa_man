@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 
-class List extends StatelessWidget {
+class List extends StatefulWidget {
   const List({super.key, required this.value});
 
   final dynamic value;
 
+  @override
+  State<List> createState() => _ListState();
+}
+
+class _ListState extends State<List> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -24,7 +29,7 @@ class List extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-                itemCount: value.length,
+                itemCount: widget.value.length,
                 itemBuilder: (context, int i) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 10.0, bottom: 10),
@@ -45,15 +50,15 @@ class List extends StatelessWidget {
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(100),
                                 image: DecorationImage(
-                                    image: NetworkImage(value[i].image),
+                                    image: NetworkImage(widget.value[i].image),
                                     fit: BoxFit.cover)),
                           ),
                           title: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text("Name: " + value[i].name),
-                              Text("Breed: " + value[i].Breed)
+                              Text("Name: " + widget.value[i].name),
+                              Text("Breed: " + widget.value[i].breed)
                             ],
                           )),
                     ),
