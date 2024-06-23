@@ -5,7 +5,7 @@ class Supa {
   final _client = Supabase.instance.client;
 
   Future insertData({required name, required breed, required image}) async {
-    final response = await _client
+    await _client
         .from('CAT')
         .insert({'name': name, 'breed': breed, 'image': image});
   }
@@ -16,5 +16,21 @@ class Supa {
     return data.map((json) => cat.fromJson(json)).toList();
   }
 
-  get  supabase => _client;
+  Future delete({required list}) async {
+    await _client.from('CAT').delete().inFilter('name', [list.name]);
+  }
+
+  Future update(String filter, String name, String breed) async {
+    if (breed.isEmpty) {
+      await _client.from("CAT").update({'name': name}).eq('name', filter);
+    } else if (name.isEmpty) {
+      await _client.from("CAT").update({'breed': breed}).eq('breed', filter);
+    } else {
+      await _client
+          .from("CAT")
+          .update({'name': name, 'breed': breed}).eq('name', filter);
+    }
+  }
+
+  get supabase => _client;
 }
