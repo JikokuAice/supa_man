@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'dart:core';
 import 'package:flutter/material.dart';
+import 'package:supa_man/repository/connectivity.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../repository/catRepo.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 
 class Forms extends StatefulWidget {
-  Forms({super.key});
+  const Forms({super.key});
 
   @override
   State<Forms> createState() => _FormsState();
@@ -79,7 +80,16 @@ class _FormsState extends State<Forms> {
                         child: Text("Select Image"),
                       ),
                       ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
+                            bool isOnline =
+                                await Checkconnectivity().connectionStatus;
+                            if (!isOnline) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          "Cant insert data you are offline 📴")));
+                              return;
+                            }
                             setState(() {
                               uploadAndSave();
                             });

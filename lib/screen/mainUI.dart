@@ -1,7 +1,13 @@
+import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:supa_man/model/cat.dart';
+import 'package:supa_man/repository/connectivity.dart';
+import 'package:supa_man/repository/local.dart';
 import 'package:supa_man/screen/List.dart';
 import '../repository/catRepo.dart';
-
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'Form.dart';
 
 class MyApp extends StatefulWidget {
@@ -12,10 +18,37 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  var _isOnline = true;
+  @override
+  void initState() {
+    super.initState();
+    updateStatus();
+  }
+
+  updateStatus() async {
+    _isOnline = await Checkconnectivity().connectionStatus;
+    setState(() {
+      _isOnline = _isOnline;
+    });
+    print(_isOnline);
+  }
+
+  Future storeInLocal() async {
+    final fetchs = await Supa().fetch();
+
+    for (int i = 0; i < fetchs.length; i++) {
+      await Hive.box<cat>('localStorage').put(i, fetchs[i]);
+    }
+  }
+
+  Future getLocalData() async {
+    return Hive.box<cat>('localStorage').values.toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: Supa().fetch(),
+        future: _isOnline ? Supa().fetch() : getLocalData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return Scaffold(
@@ -23,9 +56,9 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () {
                     _reload(context);
                   },
-                  child: Icon(Icons.add),
+                  child: const Icon(Icons.add),
                 ),
-                body:List(value: snapshot.data));
+                body: List(value: snapshot.data));
           } else if (snapshot.hasError) {
             return Scaffold(
               body: Center(
@@ -47,8 +80,4 @@ class _MyAppState extends State<MyApp> {
         context, MaterialPageRoute(builder: (context) => Forms()));
     setState(() {});
   }
-
-
-
- 
 }

@@ -1,8 +1,17 @@
 import 'dart:convert';
+import 'package:hive/hive.dart';
 
+part 'cat.g.dart';
+
+@HiveType(typeId: 1)
 class cat {
+  @HiveField(1)
   final String name;
+
+  @HiveField(2)
   final String breed;
+
+  @HiveField(3)
   final String image;
 
   const cat({required this.name, required this.breed, required this.image});

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supa_man/repository/catRepo.dart';
+import 'package:supa_man/repository/connectivity.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import './updateForm.dart';
 
 class List extends StatefulWidget {
@@ -46,14 +48,20 @@ class _ListState extends State<List> {
                         shape: RoundedRectangleBorder(
                             side: BorderSide(width: 1, color: Colors.white),
                             borderRadius: BorderRadius.circular(10)),
-                        leading: Container(
-                          width: 50,
+                        leading: CachedNetworkImage(
                           height: 50,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              image: DecorationImage(
-                                  image: NetworkImage(widget.value[i].image),
-                                  fit: BoxFit.cover)),
+                          width: 50,
+                          imageUrl: widget.value[i].image,
+                          fit: BoxFit.cover,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) =>
+                                  LinearProgressIndicator(
+                            color: Colors.black,
+                            value: downloadProgress.progress,
+                            backgroundColor: Colors.white,
+                          ),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
                         ),
                         title: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -70,7 +78,16 @@ class _ListState extends State<List> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 IconButton(
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      bool isOnline = await Checkconnectivity()
+                                          .connectionStatus;
+                                      if (!isOnline) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                                content: Text(
+                                                    "you are offline cant update items")));
+                                        return;
+                                      }
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -82,6 +99,16 @@ class _ListState extends State<List> {
                                     icon: Icon(Icons.edit)),
                                 IconButton(
                                     onPressed: () async {
+                                      bool isOnline = await Checkconnectivity()
+                                          .connectionStatus;
+                                      if (!isOnline) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                                content: Text(
+                                                    "you are offline cant delete items")));
+                                        return;
+                                      }
+
                                       await Supa()
                                           .delete(list: widget.value[i]);
                                       setState(() {

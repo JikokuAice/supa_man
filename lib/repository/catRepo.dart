@@ -1,5 +1,8 @@
+import 'package:hive_flutter/adapters.dart';
+import 'package:supa_man/repository/local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../model/cat.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class Supa {
   final _client = Supabase.instance.client;
