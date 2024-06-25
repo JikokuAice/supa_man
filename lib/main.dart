@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:supa_man/repository/local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import "./screen/mainUI.dart";
 import 'package:hive_flutter/hive_flutter.dart';
@@ -15,7 +14,7 @@ void main() async {
 
   await Hive.initFlutter();
   Hive.registerAdapter(catAdapter());
-  await Hive.openBox<cat>("localStorage");
+  await Hive.openBox<Cat>("localStorage");
 
   runApp(const MaterialApp(
     home: MyApp(),

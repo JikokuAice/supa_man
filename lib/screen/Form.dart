@@ -77,7 +77,7 @@ class _FormsState extends State<Forms> {
                         onPressed: () {
                           getImage();
                         },
-                        child: Text("Select Image"),
+                        child: const Text("Select Image"),
                       ),
                       ElevatedButton(
                           onPressed: () async {
@@ -94,7 +94,7 @@ class _FormsState extends State<Forms> {
                               uploadAndSave();
                             });
                           },
-                          child: Text('Confirm'))
+                          child: const Text('Confirm'))
                     ],
                   )),
             )
@@ -132,7 +132,7 @@ class _FormsState extends State<Forms> {
     final upload = await Supa().insertData(
         name: _catbreed.text, breed: _catbreed.text, image: imageUrl);
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("All data uploaded sucessfully")));
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("All data uploaded sucessfully")));
   }
 }

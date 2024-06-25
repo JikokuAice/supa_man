@@ -30,19 +30,22 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _isOnline = _isOnline;
     });
-    print(_isOnline);
+    //storing data in hive is we are online so we fetch data from supabase.
+    if (_isOnline) {
+      storeInLocal();
+    }
   }
 
   Future storeInLocal() async {
     final fetchs = await Supa().fetch();
 
     for (int i = 0; i < fetchs.length; i++) {
-      await Hive.box<cat>('localStorage').put(i, fetchs[i]);
+      await Hive.box<Cat>('localStorage').put(i, fetchs[i]);
     }
   }
 
   Future getLocalData() async {
-    return Hive.box<cat>('localStorage').values.toList();
+    return Hive.box<Cat>('localStorage').values.toList();
   }
 
   @override

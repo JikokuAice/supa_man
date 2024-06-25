@@ -96,7 +96,7 @@ class _ListState extends State<List> {
                                                         widget.value[i].name,
                                                   )));
                                     },
-                                    icon: Icon(Icons.edit)),
+                                    icon:const Icon(Icons.edit)),
                                 IconButton(
                                     onPressed: () async {
                                       bool isOnline = await Checkconnectivity()
@@ -117,7 +117,7 @@ class _ListState extends State<List> {
                                         widget.value.removeAt(i);
                                       });
                                     },
-                                    icon: Icon(Icons.delete_forever)),
+                                    icon:const  Icon(Icons.delete_forever)),
                               ],
                             )),
                       ),

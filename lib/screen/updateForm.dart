@@ -73,7 +73,7 @@ class _UpdateitemState extends State<Updateitem> {
                                           Text('item updated Sucessfully')));
                             }
                           },
-                          child: Text('Update'))
+                          child: const Text('Update'))
                     ],
                   )),
             )

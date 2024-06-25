@@ -4,7 +4,7 @@ import 'package:hive/hive.dart';
 part 'cat.g.dart';
 
 @HiveType(typeId: 1)
-class cat {
+class Cat {
   @HiveField(1)
   final String name;
 
@@ -14,10 +14,10 @@ class cat {
   @HiveField(3)
   final String image;
 
-  const cat({required this.name, required this.breed, required this.image});
+  const Cat({required this.name, required this.breed, required this.image});
 
-  factory cat.fromJson(Map<String, dynamic> json) {
-    return cat(name: json['name'], breed: json['breed'], image: json['image']);
+  factory Cat.fromJson(Map<String, dynamic> json) {
+    return Cat(name: json['name'], breed: json['breed'], image: json['image']);
   }
 
   Map<String, dynamic> toJson() =>

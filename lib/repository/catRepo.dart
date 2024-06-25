@@ -16,7 +16,7 @@ class Supa {
   fetch() async {
     final res = await _client.from('CAT').select('*');
     final data = res as List;
-    return data.map((json) => cat.fromJson(json)).toList();
+    return data.map((json) => Cat.fromJson(json)).toList();
   }
 
   Future delete({required list}) async {

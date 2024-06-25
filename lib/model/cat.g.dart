@@ -6,17 +6,17 @@ part of 'cat.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class catAdapter extends TypeAdapter<cat> {
+class catAdapter extends TypeAdapter<Cat> {
   @override
   final int typeId = 1;
 
   @override
-  cat read(BinaryReader reader) {
+  Cat read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return cat(
+    return Cat(
       name: fields[1] as String,
       breed: fields[2] as String,
       image: fields[3] as String,
@@ -24,7 +24,7 @@ class catAdapter extends TypeAdapter<cat> {
   }
 
   @override
-  void write(BinaryWriter writer, cat obj) {
+  void write(BinaryWriter writer, Cat obj) {
     writer
       ..writeByte(3)
       ..writeByte(1)
