@@ -14,6 +14,45 @@ class List extends StatefulWidget {
 }
 
 class _ListState extends State<List> {
+  final ScrollController _scrollController = ScrollController();
+  final _cat = [];
+
+  int page = 1;
+  int screen = 10;
+  bool _isloading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.value.forEach((e) => {_cat.add(e)});
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      loadMore();
+    }
+  }
+
+  loadMore() async {
+    if (_isloading) return;
+    setState(() {
+      _isloading = true;
+    });
+    page++;
+    final data = await Supa().fetch(page: page, screen: screen);
+    setState(() {
+      _cat.addAll(data);
+      _isloading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -33,7 +72,8 @@ class _ListState extends State<List> {
           ),
           Expanded(
             child: ListView.builder(
-                itemCount: widget.value.length,
+                controller: _scrollController,
+                itemCount: _cat.length,
                 itemBuilder: (context, int i) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 10.0, bottom: 10),
@@ -51,7 +91,7 @@ class _ListState extends State<List> {
                         leading: CachedNetworkImage(
                           height: 50,
                           width: 50,
-                          imageUrl: widget.value[i].image,
+                          imageUrl: _cat[i].image,
                           fit: BoxFit.cover,
                           progressIndicatorBuilder:
                               (context, url, downloadProgress) =>
@@ -67,8 +107,8 @@ class _ListState extends State<List> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text("Name: " + widget.value[i].name),
-                            Text("Breed: " + widget.value[i].breed)
+                            Text("Name: " + _cat[i].name),
+                            Text("Breed: " + _cat[i].breed)
                           ],
                         ),
                         trailing: SizedBox(
@@ -96,7 +136,7 @@ class _ListState extends State<List> {
                                                         widget.value[i].name,
                                                   )));
                                     },
-                                    icon:const Icon(Icons.edit)),
+                                    icon: const Icon(Icons.edit)),
                                 IconButton(
                                     onPressed: () async {
                                       bool isOnline = await Checkconnectivity()
@@ -117,7 +157,7 @@ class _ListState extends State<List> {
                                         widget.value.removeAt(i);
                                       });
                                     },
-                                    icon:const  Icon(Icons.delete_forever)),
+                                    icon: const Icon(Icons.delete_forever)),
                               ],
                             )),
                       ),

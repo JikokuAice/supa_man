@@ -6,6 +6,7 @@ import 'package:supa_man/model/cat.dart';
 import 'package:supa_man/repository/connectivity.dart';
 import 'package:supa_man/repository/local.dart';
 import 'package:supa_man/screen/List.dart';
+import 'package:supa_man/screen/shimmer.dart';
 import '../repository/catRepo.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'Form.dart';
@@ -53,7 +54,19 @@ class _MyAppState extends State<MyApp> {
     return FutureBuilder(
         future: _isOnline ? Supa().fetch() : getLocalData(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(
+                child: ShimmerUI(),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Scaffold(
+              body: Center(
+                child: Text(snapshot.error.toString()),
+              ),
+            );
+          } else {
             return Scaffold(
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
@@ -62,18 +75,6 @@ class _MyAppState extends State<MyApp> {
                   child: const Icon(Icons.add),
                 ),
                 body: List(value: snapshot.data));
-          } else if (snapshot.hasError) {
-            return Scaffold(
-              body: Center(
-                child: Text(snapshot.error.toString()),
-              ),
-            );
-          } else {
-            return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
           }
         });
   }

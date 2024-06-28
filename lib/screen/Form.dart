@@ -130,8 +130,10 @@ class _FormsState extends State<Forms> {
 
   Future uploadFormDetail(String imageUrl) async {
     final upload = await Supa().insertData(
-        name: _catbreed.text, breed: _catbreed.text, image: imageUrl);
-
+        name: _catname.text, breed: _catbreed.text, image: imageUrl);
+    if (!context.mounted) {
+      Navigator.pop(context);
+    }
     ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("All data uploaded sucessfully")));
   }

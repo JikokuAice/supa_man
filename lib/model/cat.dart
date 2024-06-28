@@ -19,7 +19,6 @@ class Cat {
   factory Cat.fromJson(Map<String, dynamic> json) {
     return Cat(name: json['name'], breed: json['breed'], image: json['image']);
   }
-
   Map<String, dynamic> toJson() =>
       {'name': name, 'breed': breed, 'image': image};
 }

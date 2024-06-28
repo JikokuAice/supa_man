@@ -13,8 +13,11 @@ class Supa {
         .insert({'name': name, 'breed': breed, 'image': image});
   }
 
-  fetch() async {
-    final res = await _client.from('CAT').select('*');
+  fetch({int page = 1, int screen = 10}) async {
+    final res = await _client
+        .from('CAT')
+        .select('*')
+        .range((page - 1) * screen, screen * page - 1);
     final data = res as List;
     return data.map((json) => Cat.fromJson(json)).toList();
   }
