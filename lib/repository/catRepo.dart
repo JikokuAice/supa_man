@@ -7,10 +7,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 class Supa {
   final _client = Supabase.instance.client;
 
-  Future insertData({required name, required breed, required image}) async {
-    await _client
-        .from('CAT')
-        .insert({'name': name, 'breed': breed, 'image': image});
+  Future insertData(Cat cat) async {
+    await _client.from('CAT').insert(cat.toJson());
   }
 
   fetch({int page = 1, int screen = 10}) async {
@@ -22,19 +20,19 @@ class Supa {
     return data.map((json) => Cat.fromJson(json)).toList();
   }
 
-  Future delete({required list}) async {
-    await _client.from('CAT').delete().inFilter('name', [list.name]);
+  Future delete(Cat cat) async {
+    await _client.from('CAT').delete().inFilter('name', [cat.name]);
   }
 
-  Future update(String filter, String name, String breed) async {
-    if (breed.isEmpty) {
-      await _client.from("CAT").update({'name': name}).eq('name', filter);
-    } else if (name.isEmpty) {
-      await _client.from("CAT").update({'breed': breed}).eq('breed', filter);
+  Future update(
+    Cat cat,
+  ) async {
+    if (cat.breed.isEmpty) {
+      await _client.from("CAT").update({'name': cat.name}).eq('name', cat.name);
     } else {
       await _client
           .from("CAT")
-          .update({'name': name, 'breed': breed}).eq('name', filter);
+          .update({'name': cat.name, 'breed': cat.breed}).eq('name', cat.name);
     }
   }
 

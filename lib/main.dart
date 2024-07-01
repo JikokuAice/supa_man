@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:supa_man/Bloc/bloc/cat_bloc.dart';
+import 'package:supa_man/repository/catRepo.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import "./screen/mainUI.dart";
 import 'package:hive_flutter/hive_flutter.dart';
@@ -16,8 +19,14 @@ void main() async {
   Hive.registerAdapter(catAdapter());
   await Hive.openBox<Cat>("localStorage");
 
-  runApp(const MaterialApp(
-    home: MyApp(),
-    debugShowCheckedModeBanner: false,
+  runApp(MultiBlocProvider(
+    providers: [
+      BlocProvider(
+          create: (BuildContext context) => CatBloc(repository: Supa()))
+    ],
+    child: const MaterialApp(
+      home: MyApp(),
+      debugShowCheckedModeBanner: false,
+    ),
   ));
 }

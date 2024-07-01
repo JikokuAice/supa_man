@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'dart:core';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supa_man/Bloc/bloc/cat_bloc.dart';
+import 'package:supa_man/model/cat.dart';
 import 'package:supa_man/repository/connectivity.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../repository/catRepo.dart';
@@ -90,9 +93,8 @@ class _FormsState extends State<Forms> {
                                           "Cant insert data you are offline 📴")));
                               return;
                             }
-                            setState(() {
-                              uploadAndSave();
-                            });
+
+                            uploadAndSave();
                           },
                           child: const Text('Confirm'))
                     ],
@@ -129,12 +131,9 @@ class _FormsState extends State<Forms> {
   }
 
   Future uploadFormDetail(String imageUrl) async {
-    final upload = await Supa().insertData(
-        name: _catname.text, breed: _catbreed.text, image: imageUrl);
-    if (!context.mounted) {
-      Navigator.pop(context);
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("All data uploaded sucessfully")));
+    final cat =
+        Cat(breed: _catbreed.text, image: imageUrl, name: _catname.text);
+    BlocProvider.of<CatBloc>(context).add(AddCat(cat));
+    Navigator.pop(context);
   }
 }
