@@ -28,32 +28,32 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _catBloc = CatBloc(repository: Supa());
     _catBloc.add(LoadCat());
-    updateStatus();
+    // updateStatus();
   }
 
-  updateStatus() async {
-    _isOnline = await Checkconnectivity().connectionStatus;
-    setState(() {
-      _isOnline = _isOnline;
-    });
-    //storing data in hive is we are online so we fetch data from supabase.
-    if (_isOnline) {
-      storeInLocal();
-    }
-  }
+  // updateStatus() async {
+  //   _isOnline = await Checkconnectivity().connectionStatus;
+  //   setState(() {
+  //     _isOnline = _isOnline;
+  //   });
+  //   //storing data in hive is we are online so we fetch data from supabase.
+  //   if (_isOnline) {
+  //     storeInLocal();
+  //   }
+  // }
 
-  Future storeInLocal() async {
-    final fetchs = await Supa().fetch();
+  // Future storeInLocal() async {
+  //   final fetchs = await Supa().fetch();
 
-    for (int i = 0; i < fetchs.length; i++) {
-      await Hive.box<Cat>('localStorage').put(i, fetchs[i]);
-    }
-  }
+  //   for (int i = 0; i < fetchs.length; i++) {
+  //     await Hive.box<Cat>('localStorage').put(i, fetchs[i]);
+  //   }
+  // }
 
-  Future getLocalData() async {
-    return Hive.box<Cat>('localStorage').values.toList();
-  }
-  
+  // Future getLocalData() async {
+  //   return Hive.box<Cat>('localStorage').values.toList();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -62,13 +62,25 @@ class _MyAppState extends State<MyApp> {
         builder: (context, state) {
           if (state is CatLoading) {
             return const Scaffold(body: ShimmerUI());
+          } else if (state is DeletingCat) {
+            return const Scaffold(body: ShimmerUI());
+          } else if (state is AddingCat) {
+            return const Scaffold(body: ShimmerUI());
+          } else if (state is UpdatingCat) {
+            return const Scaffold(body: ShimmerUI());
           } else if (state is CatLoaded) {
             return Scaffold(
-              body: List(value: state.cat.toList()),
+              body: List(
+                catBloc: _catBloc,
+              ),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Forms()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Forms(
+                                catBloc: _catBloc,
+                              )));
                 },
                 child: Icon(Icons.add),
               ),
@@ -80,7 +92,7 @@ class _MyAppState extends State<MyApp> {
           } else {
             return const Scaffold(
               body: Center(
-                child: Text("cat not found 404"),
+                child: Text("Cat not found"),
               ),
             );
           }
@@ -91,7 +103,11 @@ class _MyAppState extends State<MyApp> {
 
   Future _reload(BuildContext context) async {
     await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => Forms()));
+        context,
+        MaterialPageRoute(
+            builder: (context) => Forms(
+                  catBloc: _catBloc,
+                )));
     setState(() {});
   }
 }

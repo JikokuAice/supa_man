@@ -7,9 +7,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import './updateForm.dart';
 
 class List extends StatefulWidget {
-  const List({super.key, required this.value});
-
-  final dynamic value;
+  const List({super.key, required this.catBloc});
+  final CatBloc catBloc;
 
   @override
   State<List> createState() => _ListState();
@@ -17,295 +16,160 @@ class List extends StatefulWidget {
 
 class _ListState extends State<List> {
   final ScrollController _scrollController = ScrollController();
-  final _cat = [];
-
-  int page = 1;
-  int screen = 10;
-  bool _isloading = false;
 
   @override
   void initState() {
     super.initState();
-    widget.value.forEach((e) => {_cat.add(e)});
-    _scrollController.addListener(_onScroll);
+    _scrollController.addListener(_onScroll); // Load initial data
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    _cat.clear();
+    super.dispose();
   }
 
   void _onScroll() {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
-      loadMore();
+      widget.catBloc.add(LoadMore(widget.catBloc.cats.length));
     }
-  }
-
-  loadMore() async {
-    if (_isloading) return;
-    setState(() {
-      _isloading = true;
-    });
-    page++;
-    final data = await Supa().fetch(page: page, screen: screen);
-    setState(() {
-      _cat.addAll(data);
-      _isloading = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CatBloc, CatState>(
-      listener: (context, state) {
-        if (state is AddedCat) {
-          _cat.add(state.cat);
-        }
-      },
-      child: BlocBuilder<CatBloc, CatState>(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Neighbour Cat List 🐱"),
+        centerTitle: true,
+      ),
+      body: BlocBuilder<CatBloc, CatState>(
+        bloc: widget.catBloc,
         builder: (context, state) {
-          if (state is AddedCat) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 50.0),
+          if (widget.catBloc.cats.isEmpty && state is CatLoading) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else if (state is CatError) {
+            return Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: double.infinity,
-                    height: 60,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        "Neighbour Cat List 🐱",
-                        style: TextStyle(fontSize: 32),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                        controller: _scrollController,
-                        itemCount: _cat.length,
-                        itemBuilder: (context, int i) {
-                          return Padding(
-                            padding:
-                                const EdgeInsets.only(top: 10.0, bottom: 10),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                left: 10,
-                                right: 10,
-                              ),
-                              child: ListTile(
-                                tileColor: Color.fromARGB(255, 235, 235, 235),
-                                minTileHeight: 80,
-                                shape: RoundedRectangleBorder(
-                                    side: BorderSide(
-                                        width: 1, color: Colors.white),
-                                    borderRadius: BorderRadius.circular(10)),
-                                leading: CachedNetworkImage(
-                                  height: 50,
-                                  width: 50,
-                                  imageUrl: _cat[i].image,
-                                  fit: BoxFit.cover,
-                                  progressIndicatorBuilder:
-                                      (context, url, downloadProgress) =>
-                                          LinearProgressIndicator(
-                                    color: Colors.black,
-                                    value: downloadProgress.progress,
-                                    backgroundColor: Colors.white,
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      Icon(Icons.error),
-                                ),
-                                title: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text("Name: " + _cat[i].name),
-                                    Text("Breed: " + _cat[i].breed)
-                                  ],
-                                ),
-                                trailing: SizedBox(
-                                    width: 100,
-                                    height: 100,
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                            onPressed: () async {
-                                              bool isOnline =
-                                                  await Checkconnectivity()
-                                                      .connectionStatus;
-                                              if (!isOnline) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(const SnackBar(
-                                                        content: Text(
-                                                            "you are offline cant update items")));
-                                                return;
-                                              }
-
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          Updateitem(
-                                                              itemName: _cat[i]
-                                                                  .name)));
-                                            },
-                                            icon: const Icon(Icons.edit)),
-                                        IconButton(
-                                            onPressed: () async {
-                                              bool isOnline =
-                                                  await Checkconnectivity()
-                                                      .connectionStatus;
-                                              if (!isOnline) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(const SnackBar(
-                                                        content: Text(
-                                                            "you are offline cant delete items")));
-                                                return;
-                                              }
-
-                                              await Supa().delete(_cat[i]);
-                                              setState(() {
-                                                //optimistic UI update
-                                                //also removing item from locally
-                                                _cat.removeAt(i);
-                                              });
-                                            },
-                                            icon: const Icon(
-                                                Icons.delete_forever)),
-                                      ],
-                                    )),
-                              ),
-                            ),
-                          );
-                        }),
+                  Text("error"),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      widget.catBloc.add(LoadCat());
+                    },
+                    child: Text('Retry'),
                   ),
                 ],
               ),
             );
           }
-          return Padding(
-            padding: const EdgeInsets.only(top: 50.0),
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: 60,
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      "Neighbour Cat List 🐱",
-                      style: TextStyle(fontSize: 32),
+
+          return ListView.builder(
+            controller: _scrollController,
+            itemCount: widget.catBloc.cats.length +
+                (widget.catBloc.isLastPage ? 0 : 1),
+            itemBuilder: (context, index) {
+              if (index >= widget.catBloc.cats.length) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+              final cat = widget.catBloc.cats[index];
+              return Padding(
+                padding: const EdgeInsets.only(top: 10.0, bottom: 10),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10),
+                  child: ListTile(
+                    tileColor: Color.fromARGB(255, 235, 235, 235),
+                    minTileHeight: 80,
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(width: 1, color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    leading: CachedNetworkImage(
+                      height: 50,
+                      width: 50,
+                      imageUrl: cat.image,
+                      fit: BoxFit.cover,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                              LinearProgressIndicator(
+                        color: Colors.black,
+                        value: downloadProgress.progress,
+                        backgroundColor: Colors.white,
+                      ),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
+                    title: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("Name: " + cat.name),
+                        Text("Breed: " + cat.breed)
+                      ],
+                    ),
+                    trailing: SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: () async {
+                              bool isOnline =
+                                  await Checkconnectivity().connectionStatus;
+                              if (!isOnline) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            "you are offline cant update items")));
+                                return;
+                              }
+
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Updateitem(
+                                            itemId: cat.id,
+                                            catBloc: widget.catBloc,
+                                          )));
+                            },
+                            icon: const Icon(Icons.edit),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              bool isOnline =
+                                  await Checkconnectivity().connectionStatus;
+                              if (!isOnline) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            "you are offline cant delete items")));
+                                return;
+                              }
+
+                              BlocProvider.of<CatBloc>(context)
+                                  .add(DeleteCat(cat));
+                            },
+                            icon: const Icon(Icons.delete_forever),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                      controller: _scrollController,
-                      itemCount: _cat.length,
-                      itemBuilder: (context, int i) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 10.0, bottom: 10),
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 10,
-                              right: 10,
-                            ),
-                            child: ListTile(
-                              tileColor: Color.fromARGB(255, 235, 235, 235),
-                              minTileHeight: 80,
-                              shape: RoundedRectangleBorder(
-                                  side:
-                                      BorderSide(width: 1, color: Colors.white),
-                                  borderRadius: BorderRadius.circular(10)),
-                              leading: CachedNetworkImage(
-                                height: 50,
-                                width: 50,
-                                imageUrl: _cat[i].image,
-                                fit: BoxFit.cover,
-                                progressIndicatorBuilder:
-                                    (context, url, downloadProgress) =>
-                                        LinearProgressIndicator(
-                                  color: Colors.black,
-                                  value: downloadProgress.progress,
-                                  backgroundColor: Colors.white,
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    Icon(Icons.error),
-                              ),
-                              title: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text("Name: " + _cat[i].name),
-                                  Text("Breed: " + _cat[i].breed)
-                                ],
-                              ),
-                              trailing: SizedBox(
-                                  width: 100,
-                                  height: 100,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      IconButton(
-                                          onPressed: () async {
-                                            bool isOnline =
-                                                await Checkconnectivity()
-                                                    .connectionStatus;
-                                            if (!isOnline) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(const SnackBar(
-                                                      content: Text(
-                                                          "you are offline cant update items")));
-                                              return;
-                                            }
-
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        Updateitem(
-                                                            itemName:
-                                                                _cat[i].name)));
-                                          },
-                                          icon: const Icon(Icons.edit)),
-                                      IconButton(
-                                          onPressed: () async {
-                                            bool isOnline =
-                                                await Checkconnectivity()
-                                                    .connectionStatus;
-                                            if (!isOnline) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(const SnackBar(
-                                                      content: Text(
-                                                          "you are offline cant delete items")));
-                                              return;
-                                            }
-
-                                            await Supa().delete(_cat[i]);
-                                            setState(() {
-                                              //optimistic UI update
-                                              //also removing item from locally
-                                              _cat.removeAt(i);
-                                            });
-                                          },
-                                          icon:
-                                              const Icon(Icons.delete_forever)),
-                                    ],
-                                  )),
-                            ),
-                          ),
-                        );
-                      }),
-                ),
-              ],
-            ),
+              );
+            },
           );
         },
       ),

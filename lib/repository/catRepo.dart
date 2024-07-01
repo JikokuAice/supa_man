@@ -17,6 +17,7 @@ class Supa {
         .select('*')
         .range((page - 1) * screen, screen * page - 1);
     final data = res as List;
+    print(data);
     return data.map((json) => Cat.fromJson(json)).toList();
   }
 
@@ -27,13 +28,9 @@ class Supa {
   Future update(
     Cat cat,
   ) async {
-    if (cat.breed.isEmpty) {
-      await _client.from("CAT").update({'name': cat.name}).eq('name', cat.name);
-    } else {
-      await _client
-          .from("CAT")
-          .update({'name': cat.name, 'breed': cat.breed}).eq('name', cat.name);
-    }
+    await _client
+        .from("CAT")
+        .update({'name': cat.name, 'breed': cat.breed}).eq('id', cat.id);
   }
 
   get supabase => _client;

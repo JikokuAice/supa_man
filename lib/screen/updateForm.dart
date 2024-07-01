@@ -5,8 +5,9 @@ import 'package:supa_man/model/cat.dart';
 import 'package:supa_man/repository/catRepo.dart';
 
 class Updateitem extends StatefulWidget {
-  const Updateitem({super.key, required this.itemName});
-  final String itemName;
+  const Updateitem({super.key, required this.itemId, required this.catBloc});
+  final int itemId;
+  final CatBloc catBloc;
   @override
   State<Updateitem> createState() => _UpdateitemState();
 }
@@ -63,7 +64,7 @@ class _UpdateitemState extends State<Updateitem> {
                       ),
                       ElevatedButton(
                           onPressed: () {
-                            upgrade(widget.itemName);
+                            upgrade(widget.itemId);
                           },
                           child: const Text('Update'))
                     ],
@@ -81,10 +82,11 @@ class _UpdateitemState extends State<Updateitem> {
     }
   }
 
-  Future upgrade(String item) async {
+  Future upgrade(int item) async {
     if (_formkey.currentState!.validate()) {
-      var cat = Cat(breed: _updateCatBreed.text, name: _updateCatName.text);
-      BlocProvider.of<CatBloc>(context).add(UpdateCat(cat));
+      var cat =
+          Cat(breed: _updateCatBreed.text, name: _updateCatName.text, id: item);
+      widget.catBloc.add(UpdateCat(cat));
       Navigator.pop(context);
     }
   }
