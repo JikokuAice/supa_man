@@ -11,7 +11,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 
 class Forms extends StatefulWidget {
-  const Forms({super.key});
+  final CatBloc catBloc;
+  const Forms({super.key, required this.catBloc});
 
   @override
   State<Forms> createState() => _FormsState();
@@ -133,7 +134,7 @@ class _FormsState extends State<Forms> {
   Future uploadFormDetail(String imageUrl) async {
     final cat =
         Cat(breed: _catbreed.text, image: imageUrl, name: _catname.text);
-    BlocProvider.of<CatBloc>(context).add(AddCat(cat));
-    Navigator.pop(context);
+    widget.catBloc.add(AddCat(cat));
+    Navigator.of(context).pop();
   }
 }

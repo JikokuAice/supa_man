@@ -28,7 +28,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _catBloc = CatBloc(repository: Supa());
     _catBloc.add(LoadCat());
-    updateStatus();
+    //  updateStatus();
   }
 
   updateStatus() async {
@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
   Future getLocalData() async {
     return Hive.box<Cat>('localStorage').values.toList();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -67,8 +67,12 @@ class _MyAppState extends State<MyApp> {
               body: List(value: state.cat.toList()),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Forms()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Forms(
+                                catBloc: _catBloc,
+                              )));
                 },
                 child: Icon(Icons.add),
               ),
@@ -91,7 +95,11 @@ class _MyAppState extends State<MyApp> {
 
   Future _reload(BuildContext context) async {
     await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => Forms()));
+        context,
+        MaterialPageRoute(
+            builder: (context) => Forms(
+                  catBloc: _catBloc,
+                )));
     setState(() {});
   }
 }

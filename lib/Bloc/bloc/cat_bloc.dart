@@ -28,8 +28,8 @@ class CatBloc extends Bloc<CatEvent, CatState> {
   _onAddCat(AddCat event, Emitter<CatState> emit) async {
     emit(AddingCat());
     try {
-      final add = await repository.insertData(event.cat);
-      emit(AddedCat(add));
+      await repository.insertData(event.cat);
+
       final fetch = await repository.fetch();
       emit(CatLoaded(fetch));
     } catch (e) {
