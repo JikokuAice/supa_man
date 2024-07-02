@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _catBloc = CatBloc(repository: Supa());
     _scrollController.addListener(_onScroll);
-    _catBloc.add(LoadCat(page: 1));
+    _catBloc.add(LoadCat(page: _page));
   }
 
   void _onScroll() {

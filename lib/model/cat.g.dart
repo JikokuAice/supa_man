@@ -19,7 +19,7 @@ class CatAdapter extends TypeAdapter<Cat> {
     return Cat(
       name: fields[1] as String,
       breed: fields[2] as String,
-      id: fields[4] as int,
+      id: fields[4] as int?,
       image: fields[3] as String,
     );
   }

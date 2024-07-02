@@ -1,15 +1,19 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
 import 'package:supa_man/model/cat.dart';
 import 'package:supa_man/repository/catRepo.dart';
 import 'package:dartz/dartz.dart';
+import 'package:supa_man/main.dart';
 part 'cat_event.dart';
 
 part 'cat_state.dart';
 
 class CatBloc extends Bloc<CatEvent, CatState> {
   final Supa repository;
+
+  final hive = Hive.box<Cat>("localStorage");
 // calling Bloc class giving initial state
   CatBloc({required this.repository}) : super(CatInitial()) {
     // event handling
@@ -23,8 +27,13 @@ class CatBloc extends Bloc<CatEvent, CatState> {
     emit(CatLoading());
     try {
       final fetch = await repository.fetch(page: event.page);
-      emit(CatLoaded(fetch));
-    } catch (e) {}
+      fetch.forEach((e) async {
+        await hive.put(e.id, e);
+      });
+      emit(CatLoaded(hive.values.toList()));
+    } catch (e) {
+      emit(CatError(e.toString()));
+    }
   }
 
   _onAddCat(AddCat event, Emitter<CatState> emit) async {
@@ -42,8 +51,8 @@ class CatBloc extends Bloc<CatEvent, CatState> {
     emit(UpdatingCat());
     try {
       final update = await repository.update(event.cat);
-      final fetch = await repository.fetch();
-      emit(CatLoaded(fetch));
+      hive.put(event.cat.id, event.cat);
+      emit(CatLoaded(hive.values.toList()));
     } catch (e) {
       emit(CatError(e.toString()));
     }
@@ -53,8 +62,9 @@ class CatBloc extends Bloc<CatEvent, CatState> {
     emit(DeletingCat());
     try {
       final delete = await repository.delete(event.cat);
-      final fetch = await repository.fetch();
-      emit(CatLoaded(fetch));
+      hive.delete(event.cat.id);
+      print(hive.containsKey(event.cat.id));
+      emit(CatLoaded(hive.values.toList()));
     } catch (e) {
       emit(CatError(e.toString()));
     }

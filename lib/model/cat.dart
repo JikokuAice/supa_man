@@ -16,7 +16,7 @@ class Cat extends Equatable {
   final String image;
 
   @HiveField(4)
-  final int id;
+  final int? id;
 
   const Cat(
       {required this.name,

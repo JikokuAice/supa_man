@@ -29,7 +29,7 @@ class Supa {
   ) async {
     await _client
         .from("CAT")
-        .update({'name': cat.name, 'breed': cat.breed}).eq('id', cat.id);
+        .update({'name': cat.name, 'breed': cat.breed}).eq('id', cat.id!);
   }
 
   get supabase => _client;

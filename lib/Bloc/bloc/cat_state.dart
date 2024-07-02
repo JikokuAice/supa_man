@@ -9,7 +9,7 @@ final class CatInitial extends CatState {}
 final class CatLoading extends CatState {}
 
 final class CatLoaded extends CatState {
-  final List<Cat> cat;
+  final  cat;
   CatLoaded(this.cat);
 }
 
