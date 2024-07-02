@@ -11,13 +11,12 @@ class Supa {
     await _client.from('CAT').insert(cat.toJson());
   }
 
-  fetch({int page = 1, int screen = 10}) async {
+  Future fetch({int page = 1, int screen = 10}) async {
     final res = await _client
         .from('CAT')
         .select('*')
         .range((page - 1) * screen, screen * page - 1);
     final data = res as List;
-    print(data);
     return data.map((json) => Cat.fromJson(json)).toList();
   }
 

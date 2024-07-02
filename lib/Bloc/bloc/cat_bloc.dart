@@ -10,15 +10,10 @@ part 'cat_state.dart';
 
 class CatBloc extends Bloc<CatEvent, CatState> {
   final Supa repository;
-  List<Cat> cats = [];
-  bool isLastPage = false;
-  int pageNumber = 1;
-  final int numberOfPostsPerRequest =
-      10; // calling Bloc class giving initial state
+// calling Bloc class giving initial state
   CatBloc({required this.repository}) : super(CatInitial()) {
     // event handling
     on<LoadCat>(_onLoadCat);
-    on<LoadMore>(_onMore);
     on<AddCat>(_onAddCat);
     on<UpdateCat>(_onUpdateCat);
     on<DeleteCat>(_onDeleteCat);
@@ -27,25 +22,9 @@ class CatBloc extends Bloc<CatEvent, CatState> {
   _onLoadCat(LoadCat event, Emitter<CatState> emit) async {
     emit(CatLoading());
     try {
-      final fetch = await repository.fetch(
-          page: pageNumber, screen: numberOfPostsPerRequest);
-
-      if (fetch.length < numberOfPostsPerRequest) {
-        isLastPage = true;
-        pageNumber += 1;
-        cats.addAll(fetch);
-        emit(CatLoaded(fetch));
-      }
-    } catch (e) {
-      emit(CatError(e.toString()));
-    }
-  }
-
-  _onMore(LoadMore event, Emitter<CatState> emit) async {
-    emit(CatLoading());
-    if (event.index < cats.length) {
-      add(LoadCat());
-    }
+      final fetch = await repository.fetch(page: event.page);
+      emit(CatLoaded(fetch));
+    } catch (e) {}
   }
 
   _onAddCat(AddCat event, Emitter<CatState> emit) async {

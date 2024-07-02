@@ -21,38 +21,39 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var _isOnline = true;
   late CatBloc _catBloc;
+  final ScrollController _scrollController = ScrollController();
+  bool _isLoading = false;
+  int _page = 1;
+
   @override
   void initState() {
     super.initState();
     _catBloc = CatBloc(repository: Supa());
-    _catBloc.add(LoadCat());
-    // updateStatus();
+    _scrollController.addListener(_onScroll);
+    _catBloc.add(LoadCat(page: 1));
   }
 
-  // updateStatus() async {
-  //   _isOnline = await Checkconnectivity().connectionStatus;
-  //   setState(() {
-  //     _isOnline = _isOnline;
-  //   });
-  //   //storing data in hive is we are online so we fetch data from supabase.
-  //   if (_isOnline) {
-  //     storeInLocal();
-  //   }
-  // }
+  void _onScroll() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      _fetchNextPage();
+    }
+  }
 
-  // Future storeInLocal() async {
-  //   final fetchs = await Supa().fetch();
+  _fetchNextPage() {
+    if (!_isLoading) {
+      _isLoading = true;
+      _page++;
+      _catBloc.add(LoadCat(page: _page));
+    }
+  }
 
-  //   for (int i = 0; i < fetchs.length; i++) {
-  //     await Hive.box<Cat>('localStorage').put(i, fetchs[i]);
-  //   }
-  // }
-
-  // Future getLocalData() async {
-  //   return Hive.box<Cat>('localStorage').values.toList();
-  // }
+  @override
+  void dispose() {
+    _catBloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +72,9 @@ class _MyAppState extends State<MyApp> {
           } else if (state is CatLoaded) {
             return Scaffold(
               body: List(
+                items: state.cat.toList(),
                 catBloc: _catBloc,
+                scrollController: _scrollController,
               ),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {

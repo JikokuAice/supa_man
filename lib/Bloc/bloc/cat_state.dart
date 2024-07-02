@@ -13,6 +13,8 @@ final class CatLoaded extends CatState {
   CatLoaded(this.cat);
 }
 
+
+
 final class CatError extends CatState {
   final String msg;
   CatError(this.msg);

@@ -6,11 +6,11 @@ sealed class CatEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadCat extends CatEvent {}
-
-class LoadMore extends CatEvent {
-  final int index;
-  LoadMore(this.index);
+class LoadCat extends CatEvent {
+  final int page;
+  LoadCat({required this.page});
+  @override
+  List<Object> get props => [page];
 }
 
 class AddCat extends CatEvent {
