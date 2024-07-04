@@ -27,3 +27,4 @@ class DeleteCat extends CatEvent {
   final Cat cat;
   DeleteCat(this.cat);
 }
+

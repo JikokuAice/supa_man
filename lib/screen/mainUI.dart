@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
             return const Scaffold(body: ShimmerUI());
           } else if (state is CatLoaded) {
             return Scaffold(
-              body: List(
+              body: Lists(
                 items: state.cat.toList(),
                 catBloc: _catBloc,
                 scrollController: _scrollController,

@@ -7,7 +7,6 @@ import 'package:supa_man/repository/catRepo.dart';
 import 'package:dartz/dartz.dart';
 import 'package:supa_man/main.dart';
 part 'cat_event.dart';
-
 part 'cat_state.dart';
 
 class CatBloc extends Bloc<CatEvent, CatState> {
@@ -40,8 +39,8 @@ class CatBloc extends Bloc<CatEvent, CatState> {
     emit(AddingCat());
     try {
       final add = await repository.insertData(event.cat);
-      final fetch = await repository.fetch();
-      emit(CatLoaded(fetch));
+      hive.add(event.cat);
+      emit(CatLoaded(hive.values.toList()));
     } catch (e) {
       emit(CatError(e.toString()));
     }

@@ -9,11 +9,9 @@ final class CatInitial extends CatState {}
 final class CatLoading extends CatState {}
 
 final class CatLoaded extends CatState {
-  final  cat;
+  final cat;
   CatLoaded(this.cat);
 }
-
-
 
 final class CatError extends CatState {
   final String msg;
@@ -46,3 +44,4 @@ final class DeletedCat extends CatState {
   final Cat cat;
   DeletedCat(this.cat);
 }
+
