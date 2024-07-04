@@ -96,7 +96,15 @@ class _UpdateitemState extends State<Updateitem> {
                               onPressed: () {
                                 upgrade(widget.itemId);
                               },
-                              child: const Text('Update'))
+                              child: Localizations.override(
+                                context: context,
+                                locale: Locale(state),
+                                child: Builder(
+                                  builder: (context) => Text(
+                                    " ${AppLocalizations.of(context)!.update}",
+                                  ),
+                                ),
+                              ))
                         ],
                       )),
                 )

@@ -2,5 +2,14 @@
   "neighbourCatList": "Neighbour Cat List",
   "name": "Name",
   "breed": "Breed",
-  "cat": "cat"
+  "cat": "cat",
+  "update": "update",
+  "sort": "sort by",
+  "name_asc": "name ascedning 😼⬆️",
+  "name_desc": "name decending 😼⬇️",
+  "breed_asc": "breed ascending 🐈⬇️",
+  "breed_desc": "breed descending 🐈⬇️",
+  "image": "Select Image 📷",
+  "confirm": "confirm 🤓",
+  "item": "Item Name"
 }

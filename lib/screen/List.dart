@@ -104,7 +104,8 @@ class _ListState extends State<Lists> {
                   ? TextField(
                       controller: _searchController,
                       onChanged: _filterItems,
-                      decoration: const InputDecoration(hintText: "Item Name"),
+                      decoration: const InputDecoration(
+                          hintText: "Item(वस्तु) Name(नाम)"),
                     )
                   : Localizations.override(
                       context: context,
@@ -128,7 +129,7 @@ class _ListState extends State<Lists> {
                 IconButton(
                     onPressed: () {
                       setState(() {
-                        showSortList();
+                        showSortList(state);
                       });
                     },
                     icon: Icon(Icons.sort))
@@ -143,7 +144,7 @@ class _ListState extends State<Lists> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10, right: 10),
                     child: ListTile(
-                      tileColor: Color.fromARGB(255, 179, 145, 145),
+                      tileColor: Color.fromARGB(255, 222, 222, 222),
                       minTileHeight: 80,
                       shape: RoundedRectangleBorder(
                         side: BorderSide(width: 1, color: Colors.white),
@@ -276,13 +277,21 @@ class _ListState extends State<Lists> {
             ));
   }
 
-  void showSortList() {
+  void showSortList(String state) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             scrollable: true,
-            title: Text("sort by"),
+            title: Localizations.override(
+              context: context,
+              locale: Locale(state),
+              child: Builder(
+                builder: (context) => Text(
+                  " ${AppLocalizations.of(context)!.sort}",
+                ),
+              ),
+            ),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             content: Container(
@@ -296,14 +305,22 @@ class _ListState extends State<Lists> {
                       _sort("name", false);
                     },
                     child: Container(
-                        color: const Color.fromARGB(255, 235, 235, 235),
-                        height: 40,
-                        width: double.infinity,
-                        child: const Center(
-                            child: Text(
-                          "Name Decending",
-                          style: TextStyle(fontSize: 20),
-                        ))),
+                      color: const Color.fromARGB(255, 235, 235, 235),
+                      height: 40,
+                      width: double.infinity,
+                      child: Center(
+                        child: Localizations.override(
+                          context: context,
+                          locale: Locale(state),
+                          child: Builder(
+                            builder: (context) => Text(
+                              " ${AppLocalizations.of(context)!.name_asc}",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ), //
 
                   const SizedBox(
@@ -316,14 +333,22 @@ class _ListState extends State<Lists> {
                       _sort("name", true);
                     },
                     child: Container(
-                        color: const Color.fromARGB(255, 235, 235, 235),
-                        height: 40,
-                        width: double.infinity,
-                        child: const Center(
-                            child: Text(
-                          "Name Ascending",
-                          style: TextStyle(fontSize: 20),
-                        ))),
+                      color: const Color.fromARGB(255, 235, 235, 235),
+                      height: 40,
+                      width: double.infinity,
+                      child: Center(
+                        child: Localizations.override(
+                          context: context,
+                          locale: Locale(state),
+                          child: Builder(
+                            builder: (context) => Text(
+                              " ${AppLocalizations.of(context)!.name_desc}",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
 
                   const SizedBox(
@@ -336,14 +361,22 @@ class _ListState extends State<Lists> {
                       _sort("breed", true);
                     },
                     child: Container(
-                        color: const Color.fromARGB(255, 235, 235, 235),
-                        height: 40,
-                        width: double.infinity,
-                        child: const Center(
-                            child: Text(
-                          "Breed Ascending",
-                          style: TextStyle(fontSize: 20),
-                        ))),
+                      color: const Color.fromARGB(255, 235, 235, 235),
+                      height: 40,
+                      width: double.infinity,
+                      child: Center(
+                        child: Localizations.override(
+                          context: context,
+                          locale: Locale(state),
+                          child: Builder(
+                            builder: (context) => Text(
+                              " ${AppLocalizations.of(context)!.breed_asc}",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
 
                   const SizedBox(
@@ -356,14 +389,22 @@ class _ListState extends State<Lists> {
                       _sort("breed", false);
                     },
                     child: Container(
-                        color: const Color.fromARGB(255, 235, 235, 235),
-                        height: 40,
-                        width: double.infinity,
-                        child: const Center(
-                            child: Text(
-                          "Breed Decending",
-                          style: TextStyle(fontSize: 20),
-                        ))),
+                      color: const Color.fromARGB(255, 235, 235, 235),
+                      height: 40,
+                      width: double.infinity,
+                      child: Center(
+                        child: Localizations.override(
+                          context: context,
+                          locale: Locale(state),
+                          child: Builder(
+                            builder: (context) => Text(
+                              " ${AppLocalizations.of(context)!.breed_desc}",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
