@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:supa_man/Bloc/bloc/auth_bloc_bloc.dart';
 import 'package:supa_man/Bloc/bloc/cat_bloc.dart';
 import 'package:supa_man/Bloc/lang.dart';
+import 'package:supa_man/auth_repo/user_auth.dart';
 import 'package:supa_man/repository/catRepo.dart';
+import 'package:supa_man/screen/login_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import "./screen/mainUI.dart";
 import 'package:hive_flutter/hive_flutter.dart';
@@ -26,12 +29,15 @@ void main() async {
     providers: [
       BlocProvider(
           create: (BuildContext context) => CatBloc(repository: Supa())),
-      BlocProvider(create: (BuildContext context) => LangBloc())
+      BlocProvider(create: (BuildContext context) => LangBloc()),
+      BlocProvider(
+          create: (BuildContext context) =>
+              AuthBlocBloc(repository: UserAuth()))
     ],
     child: const MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: MyApp(),
+      home: LoginPage(),
       debugShowCheckedModeBanner: false,
     ),
   ));
